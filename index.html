@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hệ Thống Điểm Danh Văn Phòng</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f8; margin: 0; padding: 15px; }
+    .card { background: white; border-radius: 12px; padding: 20px; max-width: 420px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
+    h2 { color: #1d1d1f; margin-bottom: 20px; font-size: 20px; }
+    .form-group { margin-bottom: 15px; text-align: left; }
+    label { display: block; font-weight: 600; margin-bottom: 5px; color: #333; font-size: 14px; }
+    select, input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; background: #fff; }
+    
+    .camera-box { position: relative; width: 100%; height: 260px; background: #000; border-radius: 10px; overflow: hidden; margin: 15px 0; display: flex; justify-content: center; align-items: center; }
+    video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+    canvas { display: none; }
+    
+    .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 8px; color: white; }
+    .btn-cam { background: #007aff; }
+    .btn-in { background: #34c759; }
+    .btn-out { background: #ff3b30; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    #status { margin-top: 15px; font-size: 13px; font-weight: 500; color: #555; white-space: pre-line; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>📍 Điểm Danh Văn Phòng</h2>
+
+    <div class="form-group">
+      <label>Họ và Tên:</label>
+      <select id="userName"><option value="">-- Chọn Họ Và Tên --</option></select>
+    </div>
+
+    <div class="form-group">
+      <label>Mã PIN Cá Nhân:</label>
+      <input type="password" id="userPin" placeholder="Nhập PIN cá nhân" maxlength="10">
+    </div>
+
+    <div class="form-group">
+      <label>Chọn Văn Phòng:</label>
+      <select id="office">
+        <option value="VP_602">Văn Phòng 602</option>
+        <option value="VP_608">Văn Phòng 608</option>
+      </select>
+    </div>
+
+    <!-- KHUNG LIVE CAMERA (KHÔNG CHO UPLOAD ẢNH CŨ) -->
+    <div class="camera-box">
+      <video id="webcam" autoplay playsinline muted></video>
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <button id="btnStartCam" class="btn btn-cam" onclick="startLiveCamera()">📷 BẬT CAMERA XÁC THỰC</button>
+
+    <div style="display:flex; gap:10px;">
+      <button id="btnIn" class="btn btn-in" onclick="submitCheckIn('IN')" disabled>🟢 VÀO CA</button>
+      <button id="btnOut" class="btn btn-out" onclick="submitCheckIn('OUT')" disabled>🔴 RA CA</button>
+    </div>
+
+    <div id="status">👉 Bấm nút <b>"BẬT CAMERA XÁC THỰC"</b> để khởi động Camera.</div>
+  </div>
+
+  <script>
+    // DÁN LINK APPS SCRIPT EXEC CỦA BẠN VÀO ĐÂY
+    const GAS_WEB_APP_URL = "DÁN_LINK_EXEC_CỦA_BẠN_VÀO_ĐÂY";
+
+    let cameraStream = null;
+    let userLat = null, userLng = null, userIP = '';
+
+    window.onload = function() {
+      getGeoAndIP();
+    };
+
+    // BẬT CAMERA TRỰC TIẾP CHUẨN MỌI THIẾT BỊ
+    async function startLiveCamera() {
+      const video = document.getElementById('webcam');
+      document.getElementById('status').innerText = '⏳ Đang khởi động Camera...';
+
+      const configs = [
+        { video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } } },
+        { video: { width: { ideal: 640 }, height: { ideal: 480 } } },
+        { video: true }
+      ];
+
+      for (let config of configs) {
+        try {
+          cameraStream = await navigator.mediaDevices.getUserMedia(config);
+          if (cameraStream) break;
+        } catch (e) {}
+      }
+
+      if (cameraStream) {
+        video.srcObject = cameraStream;
+        await video.play();
+        document.getElementById('btnStartCam').style.display = 'none';
+        document.getElementById('btnIn').disabled = false;
+        document.getElementById('btnOut').disabled = false;
+        document.getElementById('status').innerText = '✅ Camera đã hoạt động! Nhập PIN và bấm Vào/Ra ca.';
+      } else {
+        document.getElementById('status').innerText = '❌ Vui lòng cấp quyền truy cập Camera cho trình duyệt!';
+      }
+    }
+
+    function getGeoAndIP() {
+      fetch('https://api.ipify.org?format=json')
+        .then(res => res.json()).then(data => userIP = data.ip).catch(() => userIP = '');
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          pos => { userLat = pos.coords.latitude; userLng = pos.coords.longitude; },
+          err => console.log('Lỗi GPS:', err),
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      }
+    }
+
+    function generateDeviceId() {
+      let id = localStorage.getItem('DEVICE_ID');
+      if (!id) {
+        id = 'DEV_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        localStorage.setItem('DEVICE_ID', id);
+      }
+      return id;
+    }
+
+    function submitCheckIn(actionType) {
+      const name = document.getElementById('userName').value;
+      const pin = document.getElementById('userPin').value;
+      const office = document.getElementById('office').value;
+
+      if (!name) return alert('Vui lòng chọn Họ và Tên!');
+      if (!pin) return alert('Vui lòng nhập Mã PIN!');
+      if (!cameraStream) return alert('Vui lòng bật Camera!');
+
+      const video = document.getElementById('webcam');
+      const canvas = document.getElementById('canvas');
+      canvas.width = 400;
+      canvas.height = 300;
+      const ctx = canvas.getContext('2d');
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const imageBase64 = canvas.toDataURL('image/jpeg', 0.65);
+
+      document.getElementById('btnIn').disabled = true;
+      document.getElementById('btnOut').disabled = true;
+      document.getElementById('status').innerText = '⏳ Đang gửi dữ liệu điểm danh...';
+
+      const payload = {
+        name: name,
+        pin: pin,
+        deviceId: generateDeviceId(),
+        office: office,
+        actionType: actionType,
+        userLat: userLat,
+        userLng: userLng,
+        userIP: userIP,
+        imageBase64: imageBase64,
+        poseRequired: 'Chụp Trực Tiếp Web'
+      };
+
+      fetch(GAS_WEB_APP_URL, {
+        method: 'POST',
+        mode: 'no-cors', // Bỏ qua chặn CORS của Google
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        document.getElementById('btnIn').disabled = false;
+        document.getElementById('btnOut').disabled = false;
+        document.getElementById('status').innerText = '✅ Đã gửi điểm danh thành công!';
+        alert('✅ Đã gửi dữ liệu điểm danh thành công!');
+      })
+      .catch(err => {
+        document.getElementById('btnIn').disabled = false;
+        document.getElementById('btnOut').disabled = false;
+        document.getElementById('status').innerText = '❌ Lỗi gửi dữ liệu: ' + err;
+      });
+    }
+  </script>
+</body>
+</html>
