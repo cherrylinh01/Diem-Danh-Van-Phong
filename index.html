@@ -6,22 +6,29 @@
   <title>Hệ Thống Điểm Danh Văn Phòng</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f8; margin: 0; padding: 15px; }
-    .card { background: white; border-radius: 12px; padding: 20px; max-width: 420px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
-    h2 { color: #1d1d1f; margin-bottom: 20px; font-size: 20px; }
-    .form-group { margin-bottom: 15px; text-align: left; }
-    label { display: block; font-weight: 600; margin-bottom: 5px; color: #333; font-size: 14px; }
-    select, input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; background: #fff; }
+    .card { background: white; border-radius: 12px; padding: 20px; max-width: 440px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    h2 { color: #1d1d1f; margin-top: 0; text-align: center; font-size: 20px; }
     
-    .camera-box { position: relative; width: 100%; height: 260px; background: #000; border-radius: 10px; overflow: hidden; margin: 15px 0; display: flex; justify-content: center; align-items: center; }
+    .tab-container { display: flex; gap: 5px; margin-bottom: 15px; background: #e9ecef; padding: 4px; border-radius: 8px; }
+    .tab-btn { flex: 1; padding: 8px; border: none; background: transparent; font-weight: bold; font-size: 13px; cursor: pointer; border-radius: 6px; }
+    .tab-btn.active { background: white; color: #007aff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+    .info-bar { background: #eef6ff; border: 1px solid #cce5ff; border-radius: 8px; padding: 10px; font-size: 12px; color: #004085; margin-bottom: 15px; line-height: 1.5; }
+    .form-group { margin-bottom: 12px; text-align: left; }
+    label { display: block; font-weight: 600; margin-bottom: 4px; color: #333; font-size: 13px; }
+    select, input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 14px; background: #fff; }
+    
+    .camera-box { position: relative; width: 100%; height: 240px; background: #000; border-radius: 10px; overflow: hidden; margin: 12px 0; display: flex; justify-content: center; align-items: center; }
     video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
     canvas { display: none; }
     
-    .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 8px; color: white; }
+    .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 6px; color: white; }
     .btn-cam { background: #007aff; }
     .btn-in { background: #34c759; }
     .btn-out { background: #ff3b30; }
+    .btn-reg { background: #5856d6; }
     .btn:disabled { background: #ccc; cursor: not-allowed; }
-    #status { margin-top: 15px; font-size: 13px; font-weight: 500; color: #555; white-space: pre-line; line-height: 1.4; }
+    #status { margin-top: 15px; font-size: 13px; font-weight: 500; color: #333; white-space: pre-line; line-height: 1.4; text-align: center; }
   </style>
 </head>
 <body>
@@ -29,41 +36,67 @@
   <div class="card">
     <h2>📍 Điểm Danh Văn Phòng</h2>
 
-    <div class="form-group">
-      <label>Họ và Tên:</label>
-      <select id="userName"><option value="">-- Đang tải danh sách... --</option></select>
+    <div class="tab-container">
+      <button class="tab-btn active" onclick="switchTab('checkin')">📷 Điểm Danh</button>
+      <button class="tab-btn" onclick="switchTab('register')">📱 Đăng Ký Thiết Bị</button>
     </div>
 
-    <div class="form-group">
-      <label>Mã PIN Cá Nhân:</label>
-      <input type="password" id="userPin" placeholder="Nhập PIN cá nhân" maxlength="10">
+    <div class="info-bar">
+      🌐 <b>IP Wi-Fi:</b> <span id="infoIP">Đang kiểm tra...</span><br>
+      📍 <b>Vị trí GPS:</b> <span id="infoGPS">Đang định vị...</span>
     </div>
 
-    <div class="form-group">
-      <label>Chọn Văn Phòng:</label>
-      <select id="office">
-        <option value="VP_602">Văn Phòng 602</option>
-        <option value="VP_608">Văn Phòng 608</option>
-      </select>
+    <!-- TAB 1: ĐIỂM DANH -->
+    <div id="tabCheckin">
+      <div class="form-group">
+        <label>Họ và Tên:</label>
+        <select id="userName"><option value="">-- Đang tải danh sách... --</option></select>
+      </div>
+
+      <div class="form-group">
+        <label>Mã PIN Cá Nhân:</label>
+        <input type="password" id="userPin" placeholder="Nhập PIN cá nhân" maxlength="10">
+      </div>
+
+      <div class="form-group">
+        <label>Chọn Văn Phòng:</label>
+        <select id="office">
+          <option value="VP_602">Văn Phòng 602</option>
+          <option value="VP_608">Văn Phòng 608</option>
+        </select>
+      </div>
+
+      <div class="camera-box">
+        <video id="webcam" autoplay playsinline muted></video>
+        <canvas id="canvas"></canvas>
+      </div>
+
+      <button id="btnStartCam" class="btn btn-cam" onclick="startLiveCamera()">📷 BẬT CAMERA XÁC THỰC</button>
+
+      <div style="display:flex; gap:10px;">
+        <button id="btnIn" class="btn btn-in" onclick="submitCheckIn('IN')" disabled>🟢 VÀO CA</button>
+        <button id="btnOut" class="btn btn-out" onclick="submitCheckIn('OUT')" disabled>🔴 RA CA</button>
+      </div>
     </div>
 
-    <div class="camera-box">
-      <video id="webcam" autoplay playsinline muted></video>
-      <canvas id="canvas"></canvas>
+    <!-- TAB 2: ĐĂNG KÝ THIẾT BỊ -->
+    <div id="tabRegister" style="display:none;">
+      <div class="form-group">
+        <label>Họ và Tên:</label>
+        <select id="regUserName"><option value="">-- Chọn tên để đăng ký --</option></select>
+      </div>
+      <div class="form-group">
+        <label>Tạo Mã PIN mới (từ 4 số):</label>
+        <input type="password" id="regUserPin" placeholder="Tạo mã PIN để dùng về sau">
+      </div>
+      <button class="btn btn-reg" onclick="submitRegister()">📱 ĐĂNG KÝ MÁY NÀY</button>
     </div>
 
-    <button id="btnStartCam" class="btn btn-cam" onclick="startLiveCamera()">📷 BẬT CAMERA XÁC THỰC</button>
-
-    <div style="display:flex; gap:10px;">
-      <button id="btnIn" class="btn btn-in" onclick="submitCheckIn('IN')" disabled>🟢 VÀO CA</button>
-      <button id="btnOut" class="btn btn-out" onclick="submitCheckIn('OUT')" disabled>🔴 RA CA</button>
-    </div>
-
-    <div id="status">👉 Bấm nút <b>"BẬT CAMERA XÁC THỰC"</b> để khởi động Camera.</div>
+    <div id="status">👉 Bấm nút <b>"BẬT CAMERA XÁC THỰC"</b> để bắt đầu.</div>
   </div>
 
   <script>
-    // DÁN ĐÚNG LINK APPS SCRIPT EXEC CỦA BẠN VÀO ĐÂY (GIỮ NGUYÊN DẤU " ")
+    // DÁN ĐÚNG LINK EXEC APPS SCRIPT CỦA BẠN VÀO ĐÂY
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwkp2WoJSSxsTX-ylUCvFpwTLKCujUsCKjTFc2EK9X6uIIFogvKq9IkQ1og2TnIV4zfvA/exec";
 
     let cameraStream = null;
@@ -71,69 +104,75 @@
 
     window.onload = function() {
       getGeoAndIP();
-      loadMemberList(); // Tải danh sách tên từ Google Sheet sang
+      loadMemberList();
     };
 
-    // TẢI DANH SÁCH TÊN TỪ GOOGLE SHEET
-    function loadMemberList() {
-      const select = document.getElementById('userName');
-      fetch(GAS_WEB_APP_URL)
-        .then(res => res.json())
-        .then(names => {
-          select.innerHTML = '<option value="">-- Chọn Họ Và Tên --</option>';
-          names.forEach(name => {
-            const opt = document.createElement('option');
-            opt.value = name;
-            opt.textContent = name;
-            select.appendChild(opt);
-          });
-        })
-        .catch(err => {
-          console.error(err);
-          select.innerHTML = '<option value="">❌ Lỗi tải danh sách (Kiểm tra lại Link Exec)</option>';
-        });
-    }
-
-    // BẬT CAMERA
-    async function startLiveCamera() {
-      const video = document.getElementById('webcam');
-      document.getElementById('status').innerText = '⏳ Đang kết nối Camera...';
-
-      const configs = [
-        { video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } } },
-        { video: { width: { ideal: 640 }, height: { ideal: 480 } } },
-        { video: true }
-      ];
-
-      for (let config of configs) {
-        try {
-          cameraStream = await navigator.mediaDevices.getUserMedia(config);
-          if (cameraStream) break;
-        } catch (e) {}
-      }
-
-      if (cameraStream) {
-        video.srcObject = cameraStream;
-        await video.play();
-        document.getElementById('btnStartCam').style.display = 'none';
-        document.getElementById('btnIn').disabled = false;
-        document.getElementById('btnOut').disabled = false;
-        document.getElementById('status').innerText = '✅ Camera đã sẵn sàng! Chọn tên, nhập PIN và bấm Vào/Ra ca.';
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      if (tab === 'checkin') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('tabCheckin').style.display = 'block';
+        document.getElementById('tabRegister').style.display = 'none';
       } else {
-        document.getElementById('status').innerText = '❌ Vui lòng Cho phép (Allow) quyền sử dụng Camera trên trình duyệt!';
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tabCheckin').style.display = 'none';
+        document.getElementById('tabRegister').style.display = 'block';
       }
     }
 
     function getGeoAndIP() {
       fetch('https://api.ipify.org?format=json')
-        .then(res => res.json()).then(data => userIP = data.ip).catch(() => userIP = '');
+        .then(res => res.json())
+        .then(data => { userIP = data.ip; document.getElementById('infoIP').innerText = userIP; })
+        .catch(() => { document.getElementById('infoIP').innerText = 'Không lấy được IP'; });
 
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-          pos => { userLat = pos.coords.latitude; userLng = pos.coords.longitude; },
-          err => console.log('GPS error:', err),
+          pos => {
+            userLat = pos.coords.latitude;
+            userLng = pos.coords.longitude;
+            document.getElementById('infoGPS').innerText = `${userLat.toFixed(5)}, ${userLng.toFixed(5)}`;
+          },
+          err => { document.getElementById('infoGPS').innerText = '❌ Chưa cấp quyền GPS!'; },
           { enableHighAccuracy: true, timeout: 10000 }
         );
+      } else {
+        document.getElementById('infoGPS').innerText = 'Trình duyệt không hỗ trợ GPS';
+      }
+    }
+
+    function loadMemberList() {
+      fetch(GAS_WEB_APP_URL)
+        .then(res => res.json())
+        .then(names => {
+          ['userName', 'regUserName'].forEach(id => {
+            const select = document.getElementById(id);
+            select.innerHTML = '<option value="">-- Chọn Họ và Tên --</option>';
+            names.forEach(n => {
+              const opt = document.createElement('option');
+              opt.value = n; opt.textContent = n;
+              select.appendChild(opt);
+            });
+          });
+        })
+        .catch(err => {
+          document.getElementById('status').innerText = '❌ Không thể tải danh sách tên từ Google Sheet (Kiểm tra Link Exec).';
+        });
+    }
+
+    async function startLiveCamera() {
+      const video = document.getElementById('webcam');
+      document.getElementById('status').innerText = '⏳ Đang khởi động Camera...';
+      try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 640, height: 480 } });
+        video.srcObject = cameraStream;
+        await video.play();
+        document.getElementById('btnStartCam').style.display = 'none';
+        document.getElementById('btnIn').disabled = false;
+        document.getElementById('btnOut').disabled = false;
+        document.getElementById('status').innerText = '✅ Camera đã sẵn sàng! Chọn tên & PIN để điểm danh.';
+      } catch (e) {
+        document.getElementById('status').innerText = '❌ Chưa mở quyền Camera trên trình duyệt!';
       }
     }
 
@@ -146,7 +185,29 @@
       return id;
     }
 
-    function submitCheckIn(actionType) {
+    async function submitRegister() {
+      const name = document.getElementById('regUserName').value;
+      const pin = document.getElementById('regUserPin').value;
+      if (!name || !pin) return alert('Vui lòng chọn Tên và nhập Mã PIN!');
+
+      document.getElementById('status').innerText = '⏳ Đang đăng ký thiết bị...';
+
+      try {
+        const res = await fetch(GAS_WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'registerDevice', name: name, pin: pin, deviceId: generateDeviceId() })
+        });
+        const result = await res.json();
+        alert(result.message);
+        document.getElementById('status').innerText = result.message;
+        if (result.success) switchTab('checkin');
+      } catch (err) {
+        alert('Lỗi gửi dữ liệu: ' + err);
+      }
+    }
+
+    async function submitCheckIn(actionType) {
       const name = document.getElementById('userName').value;
       const pin = document.getElementById('userPin').value;
       const office = document.getElementById('office').value;
@@ -157,18 +218,16 @@
 
       const video = document.getElementById('webcam');
       const canvas = document.getElementById('canvas');
-      canvas.width = 400;
-      canvas.height = 300;
+      canvas.width = 400; canvas.height = 300;
       const ctx = canvas.getContext('2d');
-      ctx.translate(canvas.width, 0);
-      ctx.scale(-1, 1);
+      ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       const imageBase64 = canvas.toDataURL('image/jpeg', 0.65);
 
       document.getElementById('btnIn').disabled = true;
       document.getElementById('btnOut').disabled = true;
-      document.getElementById('status').innerText = '⏳ Đang gửi dữ liệu điểm danh về Google Sheet...';
+      document.getElementById('status').innerText = '⏳ Đang kiểm tra Wi-Fi, GPS và gửi ảnh về Google Sheet...';
 
       const payload = {
         name: name,
@@ -180,26 +239,33 @@
         userLng: userLng,
         userIP: userIP,
         imageBase64: imageBase64,
-        poseRequired: 'Chụp Trực Tiếp (GitHub Web)'
+        poseRequired: 'Chụp Trực Tiếp'
       };
 
-      fetch(GAS_WEB_APP_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-      .then(() => {
+      try {
+        const res = await fetch(GAS_WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        
+        const result = await res.json();
+        
         document.getElementById('btnIn').disabled = false;
         document.getElementById('btnOut').disabled = false;
-        document.getElementById('status').innerText = '🎉 ĐÃ ĐIỂM DANH THÀNH CÔNG!\nDữ liệu và ảnh chụp đã được lưu vào Google Sheet.';
-        alert('🎉 Đã gửi dữ liệu điểm danh thành công!');
-      })
-      .catch(err => {
+
+        if (result.success) {
+          document.getElementById('status').innerText = result.message;
+          alert(result.message);
+        } else {
+          document.getElementById('status').innerText = result.message;
+          alert(result.message);
+        }
+      } catch (err) {
         document.getElementById('btnIn').disabled = false;
         document.getElementById('btnOut').disabled = false;
-        document.getElementById('status').innerText = '❌ Lỗi gửi dữ liệu: ' + err;
-      });
+        document.getElementById('status').innerText = '❌ Lỗi kết nối Server: ' + err;
+      }
     }
   </script>
 </body>
