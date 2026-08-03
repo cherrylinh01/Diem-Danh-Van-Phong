@@ -36,6 +36,7 @@
   <div class="card">
     <h2>📍 Điểm Danh Văn Phòng</h2>
 
+    <!-- GIAO DIỆN 2 TAB CHUẨN -->
     <div class="tab-container">
       <button class="tab-btn active" onclick="switchTab('checkin')">📷 Điểm Danh</button>
       <button class="tab-btn" onclick="switchTab('register')">📱 Đăng Ký Thiết Bị</button>
@@ -86,7 +87,7 @@
         <select id="regUserName"><option value="">-- Chọn tên để đăng ký --</option></select>
       </div>
       <div class="form-group">
-        <label>Tạo Mã PIN mới (từ 4 số):</label>
+        <label>Mã PIN Cá Nhân (Tạo mới từ 4 số):</label>
         <input type="password" id="regUserPin" placeholder="Tạo mã PIN cá nhân">
       </div>
       <button class="btn btn-reg" onclick="submitRegister()">📱 ĐĂNG KÝ MÁY NÀY</button>
@@ -96,7 +97,6 @@
   </div>
 
   <script>
-    // DÁN ĐÚNG LINK EXEC APPS SCRIPT CỦA BẠN VÀO ĐÂY
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwkp2WoJSSxsTX-ylUCvFpwTLKCujUsCKjTFc2EK9X6uIIFogvKq9IkQ1og2TnIV4zfvA/exec";
 
     let cameraStream = null;
@@ -142,22 +142,27 @@
     }
 
     function loadMemberList() {
-      fetch(GAS_WEB_APP_URL)
-        .then(res => res.json())
-        .then(names => {
-          ['userName', 'regUserName'].forEach(id => {
-            const select = document.getElementById(id);
-            select.innerHTML = '<option value="">-- Chọn Họ và Tên --</option>';
-            names.forEach(n => {
-              const opt = document.createElement('option');
-              opt.value = n; opt.textContent = n;
-              select.appendChild(opt);
-            });
-          });
-        })
-        .catch(err => {
-          document.getElementById('status').innerText = '❌ Lỗi tải danh sách (Kiểm tra lại Link GAS_WEB_APP_URL)';
+      // Tự động nhận diện môi trường: Google Apps Script hay GitHub Pages
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run.withSuccessHandler(populateNames).getMemberList();
+      } else {
+        fetch(GAS_WEB_APP_URL + "?api=getNames")
+          .then(res => res.json())
+          .then(populateNames)
+          .catch(err => { document.getElementById('status').innerText = '❌ Lỗi tải danh sách tên!'; });
+      }
+    }
+
+    function populateNames(names) {
+      ['userName', 'regUserName'].forEach(id => {
+        const select = document.getElementById(id);
+        select.innerHTML = '<option value="">-- Chọn Họ và Tên --</option>';
+        names.forEach(n => {
+          const opt = document.createElement('option');
+          opt.value = n; opt.textContent = n;
+          select.appendChild(opt);
         });
+      });
     }
 
     async function startLiveCamera() {
@@ -191,20 +196,13 @@
       if (!name || !pin) return alert('Vui lòng chọn Tên và nhập Mã PIN!');
 
       document.getElementById('status').innerText = '⏳ Đang đăng ký thiết bị...';
+      const payload = { action: 'registerDevice', name: name, pin: pin, deviceId: generateDeviceId() };
 
-      try {
-        const res = await fetch(GAS_WEB_APP_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'registerDevice', name: name, pin: pin, deviceId: generateDeviceId() })
-        });
-        const result = await res.json();
-        alert(result.message);
-        document.getElementById('status').innerText = result.message;
-        if (result.success) switchTab('checkin');
-      } catch (err) {
-        alert('Lỗi kết nối: ' + err);
-      }
+      sendDataToServer(payload, (res) => {
+        alert(res.message);
+        document.getElementById('status').innerText = res.message;
+        if (res.success) switchTab('checkin');
+      });
     }
 
     async function submitCheckIn(actionType) {
@@ -230,36 +228,39 @@
       document.getElementById('status').innerText = '⏳ Đang xử lý điểm danh và lưu ảnh...';
 
       const payload = {
-        name: name,
-        pin: pin,
-        deviceId: generateDeviceId(),
-        office: office,
-        actionType: actionType,
-        userLat: userLat,
-        userLng: userLng,
-        userIP: userIP,
-        imageBase64: imageBase64,
-        poseRequired: 'Chụp Trực Tiếp'
+        name: name, pin: pin, deviceId: generateDeviceId(), office: office,
+        actionType: actionType, userLat: userLat, userLng: userLng, userIP: userIP,
+        imageBase64: imageBase64, poseRequired: 'Chụp Trực Tiếp'
       };
 
-      try {
-        const res = await fetch(GAS_WEB_APP_URL, {
+      sendDataToServer(payload, (res) => {
+        document.getElementById('btnIn').disabled = false;
+        document.getElementById('btnOut').disabled = false;
+        document.getElementById('status').innerText = res.message;
+        alert(res.message);
+      });
+    }
+
+    function sendDataToServer(payload, callback) {
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        if (payload.action === 'registerDevice') {
+          google.script.run.withSuccessHandler(callback).registerDevice(payload);
+        } else {
+          google.script.run.withSuccessHandler(callback).processCheckIn(payload);
+        }
+      } else {
+        fetch(GAS_WEB_APP_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(callback)
+        .catch(err => {
+          document.getElementById('btnIn').disabled = false;
+          document.getElementById('btnOut').disabled = false;
+          document.getElementById('status').innerText = '❌ Lỗi kết nối Server: ' + err;
         });
-        
-        const result = await res.json();
-        
-        document.getElementById('btnIn').disabled = false;
-        document.getElementById('btnOut').disabled = false;
-        document.getElementById('status').innerText = result.message;
-        alert(result.message);
-
-      } catch (err) {
-        document.getElementById('btnIn').disabled = false;
-        document.getElementById('btnOut').disabled = false;
-        document.getElementById('status').innerText = '❌ Lỗi kết nối Server: ' + err;
       }
     }
   </script>
