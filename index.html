@@ -87,12 +87,12 @@
       </div>
       <div class="form-group">
         <label>Tạo Mã PIN mới (từ 4 số):</label>
-        <input type="password" id="regUserPin" placeholder="Tạo mã PIN để dùng về sau">
+        <input type="password" id="regUserPin" placeholder="Tạo mã PIN cá nhân">
       </div>
       <button class="btn btn-reg" onclick="submitRegister()">📱 ĐĂNG KÝ MÁY NÀY</button>
     </div>
 
-    <div id="status">👉 Bấm nút <b>"BẬT CAMERA XÁC THỰC"</b> để bắt đầu.</div>
+    <div id="status">👉 Bấm <b>"BẬT CAMERA XÁC THỰC"</b> để bắt đầu.</div>
   </div>
 
   <script>
@@ -156,13 +156,13 @@
           });
         })
         .catch(err => {
-          document.getElementById('status').innerText = '❌ Không thể tải danh sách tên từ Google Sheet (Kiểm tra Link Exec).';
+          document.getElementById('status').innerText = '❌ Lỗi tải danh sách (Kiểm tra lại Link GAS_WEB_APP_URL)';
         });
     }
 
     async function startLiveCamera() {
       const video = document.getElementById('webcam');
-      document.getElementById('status').innerText = '⏳ Đang khởi động Camera...';
+      document.getElementById('status').innerText = '⏳ Đang bật Camera...';
       try {
         cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 640, height: 480 } });
         video.srcObject = cameraStream;
@@ -170,9 +170,9 @@
         document.getElementById('btnStartCam').style.display = 'none';
         document.getElementById('btnIn').disabled = false;
         document.getElementById('btnOut').disabled = false;
-        document.getElementById('status').innerText = '✅ Camera đã sẵn sàng! Chọn tên & PIN để điểm danh.';
+        document.getElementById('status').innerText = '✅ Camera sẵn sàng! Chọn tên, PIN và bấm Vào/Ra ca.';
       } catch (e) {
-        document.getElementById('status').innerText = '❌ Chưa mở quyền Camera trên trình duyệt!';
+        document.getElementById('status').innerText = '❌ Bạn đã chặn quyền sử dụng Camera trên trình duyệt!';
       }
     }
 
@@ -203,7 +203,7 @@
         document.getElementById('status').innerText = result.message;
         if (result.success) switchTab('checkin');
       } catch (err) {
-        alert('Lỗi gửi dữ liệu: ' + err);
+        alert('Lỗi kết nối: ' + err);
       }
     }
 
@@ -227,7 +227,7 @@
 
       document.getElementById('btnIn').disabled = true;
       document.getElementById('btnOut').disabled = true;
-      document.getElementById('status').innerText = '⏳ Đang kiểm tra Wi-Fi, GPS và gửi ảnh về Google Sheet...';
+      document.getElementById('status').innerText = '⏳ Đang xử lý điểm danh và lưu ảnh...';
 
       const payload = {
         name: name,
@@ -253,14 +253,9 @@
         
         document.getElementById('btnIn').disabled = false;
         document.getElementById('btnOut').disabled = false;
+        document.getElementById('status').innerText = result.message;
+        alert(result.message);
 
-        if (result.success) {
-          document.getElementById('status').innerText = result.message;
-          alert(result.message);
-        } else {
-          document.getElementById('status').innerText = result.message;
-          alert(result.message);
-        }
       } catch (err) {
         document.getElementById('btnIn').disabled = false;
         document.getElementById('btnOut').disabled = false;
