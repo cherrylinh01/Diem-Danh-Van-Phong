@@ -13,7 +13,22 @@
     .tab-btn { flex: 1; padding: 8px; border: none; background: transparent; font-weight: bold; font-size: 13px; cursor: pointer; border-radius: 6px; }
     .tab-btn.active { background: white; color: #007aff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
-    .info-bar { background: #eef6ff; border: 1px solid #cce5ff; border-radius: 8px; padding: 10px; font-size: 12px; color: #004085; margin-bottom: 15px; line-height: 1.5; }
+    .info-bar { background: #eef6ff; border: 1px solid #cce5ff; border-radius: 8px; padding: 10px; font-size: 12px; color: #004085; margin-bottom: 12px; line-height: 1.5; }
+    
+    /* KHUNG HIỂN THỊ YÊU CẦU ĐỘNG TÁC & BIỂU CẢM */
+    .pose-box { 
+      background: #fff3cd; 
+      border: 1px solid #ffeeba; 
+      color: #856404; 
+      border-radius: 8px; 
+      padding: 10px; 
+      margin-bottom: 12px; 
+      text-align: center; 
+      font-weight: bold; 
+      font-size: 14px;
+    }
+    .pose-highlight { color: #d39e00; font-size: 16px; display: block; margin-top: 4px; }
+
     .form-group { margin-bottom: 12px; text-align: left; }
     label { display: block; font-weight: 600; margin-bottom: 4px; color: #333; font-size: 13px; }
     select, input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 14px; background: #fff; }
@@ -36,7 +51,6 @@
   <div class="card">
     <h2>📍 Điểm Danh Văn Phòng</h2>
 
-    <!-- GIAO DIỆN 2 TAB CHUẨN -->
     <div class="tab-container">
       <button class="tab-btn active" onclick="switchTab('checkin')">📷 Điểm Danh</button>
       <button class="tab-btn" onclick="switchTab('register')">📱 Đăng Ký Thiết Bị</button>
@@ -49,6 +63,13 @@
 
     <!-- TAB 1: ĐIỂM DANH -->
     <div id="tabCheckin">
+      
+      <!-- KHUNG HIỂN THỊ YÊU CẦU ĐỘNG TÁC TAY & BIỂU CẢM -->
+      <div class="pose-box">
+        🎭 YÊU CẦU CHỤP ANH:
+        <span id="poseText" class="pose-highlight">Bấm "BẬT CAMERA" để nhận yêu cầu</span>
+      </div>
+
       <div class="form-group">
         <label>Họ và Tên:</label>
         <select id="userName"><option value="">-- Đang tải danh sách... --</option></select>
@@ -72,7 +93,7 @@
         <canvas id="canvas"></canvas>
       </div>
 
-      <button id="btnStartCam" class="btn btn-cam" onclick="startLiveCamera()">📷 BẬT CAMERA XÁC THỰC</button>
+      <button id="btnStartCam" class="btn btn-cam" onclick="startLiveCamera()">📷 BẬT CAMERA & LẤY YÊU CẦU</button>
 
       <div style="display:flex; gap:10px;">
         <button id="btnIn" class="btn btn-in" onclick="submitCheckIn('IN')" disabled>🟢 VÀO CA</button>
@@ -93,12 +114,27 @@
       <button class="btn btn-reg" onclick="submitRegister()">📱 ĐĂNG KÝ MÁY NÀY</button>
     </div>
 
-    <div id="status">👉 Bấm <b>"BẬT CAMERA XÁC THỰC"</b> để bắt đầu.</div>
+    <div id="status">👉 Bấm <b>"BẬT CAMERA & LẤY YÊU CẦU"</b> để bắt đầu.</div>
   </div>
 
   <script>
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwkp2WoJSSxsTX-ylUCvFpwTLKCujUsCKjTFc2EK9X6uIIFogvKq9IkQ1og2TnIV4zfvA/exec";
 
+    // DANH SÁCH CÁC ĐỘNG TÁC TAY & BIỂU CẢM NGẪU NHIÊN
+    const POSE_LIST = [
+      "✌️ Giơ 2 ngón tay (V-sign) + 😊 Cười tươi",
+      "👍 Giơ ngón tay cái (Like) + 😉 Nháy mắt một bên",
+      "🫶 Bắn tim + 😍 Cười mỉm",
+      "🖐️ Xòe bàn tay sát má + 😮 Há miệng ngạc nhiên",
+      "👈 Chỉ 1 ngón tay vào má + 😊 Cười nhẹ",
+      "👌 Giơ tay ký hiệu OK + 😉 Nháy mắt",
+      "🤞 Đặt 2 ngón tay dưới cằm (V-line) + 😃 Cười tươi",
+      "✊ Nắm tay giơ ngang ngực + 😐 Mặt nghiêm túc",
+      "🤟 Ký hiệu I Love You + 😊 Cười tươi",
+      "👋 Giơ tay vẫy nhẹ + 😃 Cười mở miệng"
+    ];
+
+    let currentPose = "Chưa lấy yêu cầu";
     let cameraStream = null;
     let userLat = null, userLng = null, userIP = '';
 
@@ -142,7 +178,6 @@
     }
 
     function loadMemberList() {
-      // Tự động nhận diện môi trường: Google Apps Script hay GitHub Pages
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         google.script.run.withSuccessHandler(populateNames).getMemberList();
       } else {
@@ -165,6 +200,12 @@
       });
     }
 
+    function generateRandomPose() {
+      const randomIndex = Math.floor(Math.random() * POSE_LIST.length);
+      currentPose = POSE_LIST[randomIndex];
+      document.getElementById('poseText').innerText = currentPose;
+    }
+
     async function startLiveCamera() {
       const video = document.getElementById('webcam');
       document.getElementById('status').innerText = '⏳ Đang bật Camera...';
@@ -172,10 +213,15 @@
         cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 640, height: 480 } });
         video.srcObject = cameraStream;
         await video.play();
-        document.getElementById('btnStartCam').style.display = 'none';
+        
+        // TẠO ĐỘNG TÁC NGẪU NHIÊN KHI BẬT CAMERA
+        generateRandomPose();
+
+        document.getElementById('btnStartCam').innerText = '🔄 ĐỔI ĐỘNG TÁC KHÁC';
+        document.getElementById('btnStartCam').onclick = generateRandomPose; // Bấm lại sẽ đổi động tác khác
         document.getElementById('btnIn').disabled = false;
         document.getElementById('btnOut').disabled = false;
-        document.getElementById('status').innerText = '✅ Camera sẵn sàng! Chọn tên, PIN và bấm Vào/Ra ca.';
+        document.getElementById('status').innerText = '✅ Làm đúng động tác & biểu cảm trên hình rồi bấm Vào/Ra ca!';
       } catch (e) {
         document.getElementById('status').innerText = '❌ Bạn đã chặn quyền sử dụng Camera trên trình duyệt!';
       }
@@ -228,9 +274,16 @@
       document.getElementById('status').innerText = '⏳ Đang xử lý điểm danh và lưu ảnh...';
 
       const payload = {
-        name: name, pin: pin, deviceId: generateDeviceId(), office: office,
-        actionType: actionType, userLat: userLat, userLng: userLng, userIP: userIP,
-        imageBase64: imageBase64, poseRequired: 'Chụp Trực Tiếp'
+        name: name, 
+        pin: pin, 
+        deviceId: generateDeviceId(), 
+        office: office,
+        actionType: actionType, 
+        userLat: userLat, 
+        userLng: userLng, 
+        userIP: userIP,
+        imageBase64: imageBase64, 
+        poseRequired: currentPose // GỬI ĐỘNG TÁC + BIỂU CẢM NGẪU NHIÊN NÀY VỀ SERVER
       };
 
       sendDataToServer(payload, (res) => {
