@@ -21,7 +21,7 @@
     .btn-in { background: #34c759; }
     .btn-out { background: #ff3b30; }
     .btn:disabled { background: #ccc; cursor: not-allowed; }
-    #status { margin-top: 15px; font-size: 13px; font-weight: 500; color: #555; white-space: pre-line; }
+    #status { margin-top: 15px; font-size: 13px; font-weight: 500; color: #555; white-space: pre-line; line-height: 1.4; }
   </style>
 </head>
 <body>
@@ -31,7 +31,7 @@
 
     <div class="form-group">
       <label>Họ và Tên:</label>
-      <select id="userName"><option value="">-- Chọn Họ Và Tên --</option></select>
+      <select id="userName"><option value="">-- Đang tải danh sách... --</option></select>
     </div>
 
     <div class="form-group">
@@ -47,7 +47,6 @@
       </select>
     </div>
 
-    <!-- KHUNG LIVE CAMERA (KHÔNG CHO UPLOAD ẢNH CŨ) -->
     <div class="camera-box">
       <video id="webcam" autoplay playsinline muted></video>
       <canvas id="canvas"></canvas>
@@ -64,7 +63,7 @@
   </div>
 
   <script>
-    // DÁN LINK APPS SCRIPT EXEC CỦA BẠN VÀO ĐÂY
+    // DÁN ĐÚNG LINK APPS SCRIPT EXEC CỦA BẠN VÀO ĐÂY (GIỮ NGUYÊN DẤU " ")
     const GAS_WEB_APP_URL = "DÁN_LINK_EXEC_CỦA_BẠN_VÀO_ĐÂY";
 
     let cameraStream = null;
@@ -72,12 +71,33 @@
 
     window.onload = function() {
       getGeoAndIP();
+      loadMemberList(); // Tải danh sách tên từ Google Sheet sang
     };
 
-    // BẬT CAMERA TRỰC TIẾP CHUẨN MỌI THIẾT BỊ
+    // TẢI DANH SÁCH TÊN TỪ GOOGLE SHEET
+    function loadMemberList() {
+      const select = document.getElementById('userName');
+      fetch(GAS_WEB_APP_URL)
+        .then(res => res.json())
+        .then(names => {
+          select.innerHTML = '<option value="">-- Chọn Họ Và Tên --</option>';
+          names.forEach(name => {
+            const opt = document.createElement('option');
+            opt.value = name;
+            opt.textContent = name;
+            select.appendChild(opt);
+          });
+        })
+        .catch(err => {
+          console.error(err);
+          select.innerHTML = '<option value="">❌ Lỗi tải danh sách (Kiểm tra lại Link Exec)</option>';
+        });
+    }
+
+    // BẬT CAMERA
     async function startLiveCamera() {
       const video = document.getElementById('webcam');
-      document.getElementById('status').innerText = '⏳ Đang khởi động Camera...';
+      document.getElementById('status').innerText = '⏳ Đang kết nối Camera...';
 
       const configs = [
         { video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } } },
@@ -98,9 +118,9 @@
         document.getElementById('btnStartCam').style.display = 'none';
         document.getElementById('btnIn').disabled = false;
         document.getElementById('btnOut').disabled = false;
-        document.getElementById('status').innerText = '✅ Camera đã hoạt động! Nhập PIN và bấm Vào/Ra ca.';
+        document.getElementById('status').innerText = '✅ Camera đã sẵn sàng! Chọn tên, nhập PIN và bấm Vào/Ra ca.';
       } else {
-        document.getElementById('status').innerText = '❌ Vui lòng cấp quyền truy cập Camera cho trình duyệt!';
+        document.getElementById('status').innerText = '❌ Vui lòng Cho phép (Allow) quyền sử dụng Camera trên trình duyệt!';
       }
     }
 
@@ -111,7 +131,7 @@
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           pos => { userLat = pos.coords.latitude; userLng = pos.coords.longitude; },
-          err => console.log('Lỗi GPS:', err),
+          err => console.log('GPS error:', err),
           { enableHighAccuracy: true, timeout: 10000 }
         );
       }
@@ -148,7 +168,7 @@
 
       document.getElementById('btnIn').disabled = true;
       document.getElementById('btnOut').disabled = true;
-      document.getElementById('status').innerText = '⏳ Đang gửi dữ liệu điểm danh...';
+      document.getElementById('status').innerText = '⏳ Đang gửi dữ liệu điểm danh về Google Sheet...';
 
       const payload = {
         name: name,
@@ -160,20 +180,20 @@
         userLng: userLng,
         userIP: userIP,
         imageBase64: imageBase64,
-        poseRequired: 'Chụp Trực Tiếp Web'
+        poseRequired: 'Chụp Trực Tiếp (GitHub Web)'
       };
 
       fetch(GAS_WEB_APP_URL, {
         method: 'POST',
-        mode: 'no-cors', // Bỏ qua chặn CORS của Google
+        mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       })
       .then(() => {
         document.getElementById('btnIn').disabled = false;
         document.getElementById('btnOut').disabled = false;
-        document.getElementById('status').innerText = '✅ Đã gửi điểm danh thành công!';
-        alert('✅ Đã gửi dữ liệu điểm danh thành công!');
+        document.getElementById('status').innerText = '🎉 ĐÃ ĐIỂM DANH THÀNH CÔNG!\nDữ liệu và ảnh chụp đã được lưu vào Google Sheet.';
+        alert('🎉 Đã gửi dữ liệu điểm danh thành công!');
       })
       .catch(err => {
         document.getElementById('btnIn').disabled = false;
