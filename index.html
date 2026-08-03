@@ -66,7 +66,7 @@
       
       <!-- KHUNG HIỂN THỊ YÊU CẦU ĐỘNG TÁC TAY & BIỂU CẢM -->
       <div class="pose-box">
-        🎭 YÊU CẦU CHỤP ANH:
+        🎭 YÊU CẦU CHỤP ẢNH:
         <span id="poseText" class="pose-highlight">Bấm "BẬT CAMERA" để nhận yêu cầu</span>
       </div>
 
@@ -124,7 +124,7 @@
     const POSE_LIST = [
       "✌️ Giơ 2 ngón tay (V-sign) + 😊 Cười tươi",
       "👍 Giơ ngón tay cái (Like) + 😉 Nháy mắt một bên",
-      "🫶 Bắn tim + 😍 Cười mỉm",
+      "🫶 Bắn tim 2 tay + 😍 Cười mỉm",
       "🖐️ Xòe bàn tay sát má + 😮 Há miệng ngạc nhiên",
       "👈 Chỉ 1 ngón tay vào má + 😊 Cười nhẹ",
       "👌 Giơ tay ký hiệu OK + 😉 Nháy mắt",
@@ -214,11 +214,14 @@
         video.srcObject = cameraStream;
         await video.play();
         
-        // TẠO ĐỘNG TÁC NGẪU NHIÊN KHI BẬT CAMERA
+        // TẠO ĐỘNG TÁC NGẪU NHIÊN 1 LẦN DUY NHẤT KHI BẬT CAMERA
         generateRandomPose();
 
-        document.getElementById('btnStartCam').innerText = '🔄 ĐỔI ĐỘNG TÁC KHÁC';
-        document.getElementById('btnStartCam').onclick = generateRandomPose; // Bấm lại sẽ đổi động tác khác
+        // KHÓA NÚT BẬT CAMERA, KHÔNG CHO BẤM ĐỔI ĐỘNG TÁC NỮA
+        const btnCam = document.getElementById('btnStartCam');
+        btnCam.innerText = '✅ CAMERA ĐÃ BẬT';
+        btnCam.disabled = true;
+
         document.getElementById('btnIn').disabled = false;
         document.getElementById('btnOut').disabled = false;
         document.getElementById('status').innerText = '✅ Làm đúng động tác & biểu cảm trên hình rồi bấm Vào/Ra ca!';
@@ -283,7 +286,7 @@
         userLng: userLng, 
         userIP: userIP,
         imageBase64: imageBase64, 
-        poseRequired: currentPose // GỬI ĐỘNG TÁC + BIỂU CẢM NGẪU NHIÊN NÀY VỀ SERVER
+        poseRequired: currentPose
       };
 
       sendDataToServer(payload, (res) => {
