@@ -3,99 +3,190 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Hệ Thống Điểm Danh Văn Phòng</title>
+  <title>Hệ Thống Điểm Danh - ĐH Bách Khoa TPHCM</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f8; margin: 0; padding: 15px; }
-    .card { background: white; border-radius: 12px; padding: 20px; max-width: 440px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-    h2 { color: #1d1d1f; margin-top: 0; text-align: center; font-size: 20px; }
-    
-    .tab-container { display: flex; gap: 5px; margin-bottom: 15px; background: #e9ecef; padding: 4px; border-radius: 8px; }
-    .tab-btn { flex: 1; padding: 8px; border: none; background: transparent; font-weight: bold; font-size: 13px; cursor: pointer; border-radius: 6px; }
-    .tab-btn.active { background: white; color: #007aff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-
-    .info-bar { background: #eef6ff; border: 1px solid #cce5ff; border-radius: 8px; padding: 10px; font-size: 12px; color: #004085; margin-bottom: 12px; line-height: 1.5; }
-    
-    /* KHUNG HIỂN THỊ YÊU CẦU ĐỘNG TÁC & BIỂU CẢM */
-    .pose-box { 
-      background: #fff3cd; 
-      border: 1px solid #ffeeba; 
-      color: #856404; 
-      border-radius: 8px; 
-      padding: 10px; 
-      margin-bottom: 12px; 
-      text-align: center; 
-      font-weight: bold; 
-      font-size: 14px;
+    :root {
+      --bk-navy: #003366;
+      --bk-navy-dark: #001f3f;
+      --bk-blue: #0066cc;
+      --bk-cyan: #00a8e8;
+      --bk-gold: #f59e0b;
+      --bg-color: #f0f4f8;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --border-color: #e2e8f0;
     }
-    .pose-highlight { color: #d39e00; font-size: 16px; display: block; margin-top: 4px; }
 
-    .form-group { margin-bottom: 12px; text-align: left; }
-    label { display: block; font-weight: 600; margin-bottom: 4px; color: #333; font-size: 13px; }
-    select, input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 14px; background: #fff; }
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg-color); margin: 0; padding: 15px 10px; color: var(--text-main); }
     
-    .camera-box { position: relative; width: 100%; height: 240px; background: #000; border-radius: 10px; overflow: hidden; margin: 12px 0; display: flex; justify-content: center; align-items: center; }
+    .card { background: var(--card-bg); border-radius: 16px; padding: 20px; max-width: 450px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0, 51, 102, 0.08); border: 1px solid var(--border-color); }
+    
+    /* 1. LOGO BRANDING BANNER */
+    .logo-header { display: flex; justify-content: space-around; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
+    .logo-item { width: 45px; height: 45px; border-radius: 50%; background: #eef6ff; display: flex; justify-content: center; align-items: center; border: 1px solid #cbd5e1; font-weight: bold; font-size: 10px; color: var(--bk-navy); text-align: center; }
+    .logo-item img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; }
+
+    .header-title { text-align: center; margin-bottom: 15px; }
+    .header-title h3 { color: var(--bk-navy); margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .header-title h2 { color: var(--bk-navy-dark); margin: 4px 0 0 0; font-size: 18px; font-weight: 800; }
+
+    /* 2. ĐỒNG HỒ KỸ THUẬT SỐ & TUẦN CHẴN/LẺ */
+    .digital-clock { background: linear-gradient(135deg, var(--bk-navy-dark), var(--bk-navy)); color: white; border-radius: 12px; padding: 12px; text-align: center; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0, 51, 102, 0.2); }
+    .clock-time { font-family: 'Courier New', Courier, monospace; font-size: 26px; font-weight: bold; color: #38bdf8; letter-spacing: 2px; }
+    .clock-date { font-size: 12px; margin-top: 4px; color: #cbd5e1; }
+    .clock-week { display: inline-block; background: rgba(255, 255, 255, 0.15); padding: 2px 8px; border-radius: 20px; font-weight: 600; color: #fde047; margin-top: 4px; font-size: 11px; }
+
+    /* TAB BUTTONS */
+    .tab-container { display: flex; gap: 6px; margin-bottom: 15px; background: #e2e8f0; padding: 4px; border-radius: 10px; }
+    .tab-btn { flex: 1; padding: 9px; border: none; background: transparent; font-weight: 700; font-size: 13px; cursor: pointer; border-radius: 8px; color: #64748b; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .tab-btn.active { background: white; color: var(--bk-navy); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+
+    /* BADGES IP & GPS */
+    .status-badges { display: flex; gap: 8px; margin-bottom: 15px; }
+    .badge { flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 11px; display: flex; align-items: center; gap: 6px; color: #334155; }
+    .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); animation: pulse 1.6s infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+
+    /* 3. THẺ YÊU CẦU ĐỘNG TÁC (CHALLENGE CARD) */
+    .pose-box { background: linear-gradient(135deg, #fffbe3, #fef3c7); border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 15px; text-align: center; position: relative; }
+    .pose-title { font-size: 11px; font-weight: 700; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .pose-highlight { color: #92400e; font-size: 15px; font-weight: 800; display: block; margin-top: 5px; line-height: 1.3; }
+
+    /* FORM STYLING */
+    .form-group { margin-bottom: 12px; text-align: left; }
+    label { display: flex; align-items: center; gap: 6px; font-weight: 600; margin-bottom: 5px; color: #334155; font-size: 12px; }
+    select, input { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 13px; background: #fff; color: #1e293b; outline: none; transition: border-color 0.2s; }
+    select:focus, input:focus { border-color: var(--bk-blue); box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15); }
+
+    /* 4. CAMERA & KHUNG OVERLAY KYC */
+    .camera-box { position: relative; width: 100%; height: 250px; background: #0f172a; border-radius: 12px; overflow: hidden; margin: 15px 0; border: 2px solid #334155; }
     video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
     canvas { display: none; }
-    
-    .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 6px; color: white; }
-    .btn-cam { background: #007aff; }
-    .btn-in { background: #34c759; }
-    .btn-out { background: #ff3b30; }
-    .btn-reg { background: #5856d6; }
-    .btn:disabled { background: #ccc; cursor: not-allowed; }
-    #status { margin-top: 15px; font-size: 13px; font-weight: 500; color: #333; white-space: pre-line; line-height: 1.4; text-align: center; }
+    .kyc-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; justify-content: center; align-items: center; }
+
+    /* BUTTONS */
+    .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 6px; color: white; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+    .btn-cam { background: var(--bk-blue); }
+    .btn-cam:hover { background: #0052a3; }
+    .btn-in { background: #16a34a; }
+    .btn-out { background: #dc2626; }
+    .btn-reg { background: #2563eb; }
+    .btn:disabled { background: #cbd5e1; cursor: not-allowed; color: #94a3b8; }
+    #status { margin-top: 15px; font-size: 12px; font-weight: 600; color: #475569; white-space: pre-line; text-align: center; }
+
+    /* 5. TOAST NOTIFICATION POPUP */
+    #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; width: 90%; max-width: 400px; }
+    .toast { padding: 12px 16px; border-radius: 10px; background: white; color: #1e293b; box-shadow: 0 10px 25px rgba(0,0,0,0.15); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; animation: slideDown 0.3s forwards; border-left: 5px solid #2563eb; }
+    .toast.success { border-left-color: #16a34a; }
+    .toast.error { border-left-color: #dc2626; }
+    @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h2>📍 Điểm Danh Văn Phòng</h2>
+  <div id="toast-container"></div>
 
-    <div class="tab-container">
-      <button class="tab-btn active" onclick="switchTab('checkin')">📷 Điểm Danh</button>
-      <button class="tab-btn" onclick="switchTab('register')">📱 Đăng Ký Thiết Bị</button>
+  <div class="card">
+    
+    <!-- DẢI LOGO NHẬN DIỆN THƯƠNG HIỆU (Thay link img bằng logo thật của bạn nếu muốn) -->
+    <div class="logo-header">
+      <div class="logo-item" title="ĐH Bách Khoa">HCMUT</div>
+      <div class="logo-item" title="Đoàn Thanh Niên">ĐOÀN</div>
+      <div class="logo-item" title="Hội Sinh Viên">HSV</div>
+      <div class="logo-item" title="Khoa">KHOA</div>
     </div>
 
-    <div class="info-bar">
-      🌐 <b>IP Wi-Fi:</b> <span id="infoIP">Đang kiểm tra...</span><br>
-      📍 <b>Vị trí GPS:</b> <span id="infoGPS">Đang định vị...</span>
+    <div class="header-title">
+      <h3>Trường Đại Học Bách Khoa - ĐHQG-HCM</h3>
+      <h2>HỆ THỐNG ĐIỂM DANH TỰ ĐỘNG</h2>
+    </div>
+
+    <!-- ĐỒNG HỒ KỸ THUẬT SỐ REALTIME -->
+    <div class="digital-clock">
+      <div class="clock-time" id="clockTime">00:00:00</div>
+      <div class="clock-date" id="clockDate">Đang cập nhật thời gian...</div>
+      <div class="clock-week" id="clockWeek">Đang tính tuần...</div>
+    </div>
+
+    <div class="tab-container">
+      <button class="tab-btn active" onclick="switchTab('checkin')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        Điểm Danh
+      </button>
+      <button class="tab-btn" onclick="switchTab('register')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+        Đăng Ký Máy
+      </button>
+    </div>
+
+    <!-- STATUS BADGES IP & GPS -->
+    <div class="status-badges">
+      <div class="badge">
+        <div class="pulse-dot"></div>
+        <div><b>Wi-Fi:</b> <span id="infoIP">Đang check...</span></div>
+      </div>
+      <div class="badge">
+        <svg width="12" height="12" fill="none" stroke="#2563eb" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        <div><b>GPS:</b> <span id="infoGPS">Đang định vị...</span></div>
+      </div>
     </div>
 
     <!-- TAB 1: ĐIỂM DANH -->
     <div id="tabCheckin">
       
-      <!-- KHUNG HIỂN THỊ YÊU CẦU ĐỘNG TÁC TAY & BIỂU CẢM -->
+      <!-- THẺ YÊU CẦU ĐỘNG TÁC (CHALLENGE CARD) -->
       <div class="pose-box">
-        🎭 YÊU CẦU CHỤP ẢNH:
+        <div class="pose-title">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          Yêu cầu xác thực khuôn mặt
+        </div>
         <span id="poseText" class="pose-highlight">Bấm "BẬT CAMERA" để nhận yêu cầu</span>
       </div>
 
       <div class="form-group">
-        <label>Họ và Tên:</label>
+        <label>
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          Họ và Tên:
+        </label>
         <select id="userName"><option value="">-- Đang tải danh sách... --</option></select>
       </div>
 
       <div class="form-group">
-        <label>Mã PIN Cá Nhân:</label>
+        <label>
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          Mã PIN Cá Nhân:
+        </label>
         <input type="password" id="userPin" placeholder="Nhập PIN cá nhân" maxlength="10">
       </div>
 
       <div class="form-group">
-        <label>Chọn Văn Phòng:</label>
+        <label>
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></label>
         <select id="office">
-          <option value="VP_602">Văn Phòng 602</option>
-          <option value="VP_608">Văn Phòng 608</option>
+          <option value="VP_602">Văn Phòng 602 (CS Lý Thường Kiệt)</option>
+          <option value="VP_608">Văn Phòng 608 (CS Dĩ An)</option>
         </select>
       </div>
 
+      <!-- CAMERA VỚI KHUNG OVERLAY KYC -->
       <div class="camera-box">
         <video id="webcam" autoplay playsinline muted></video>
         <canvas id="canvas"></canvas>
+        <div class="kyc-overlay">
+          <svg width="100%" height="100%" viewBox="0 0 400 300">
+            <!-- Khung Oval phát sáng nét đứt -->
+            <ellipse cx="200" cy="140" rx="85" ry="110" fill="none" stroke="#00a8e8" stroke-width="2.5" stroke-dasharray="6,4" opacity="0.85"/>
+          </svg>
+        </div>
       </div>
 
-      <button id="btnStartCam" class="btn btn-cam" onclick="startLiveCamera()">📷 BẬT CAMERA & LẤY YÊU CẦU</button>
+      <button id="btnStartCam" class="btn btn-cam" onclick="startLiveCamera()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        BẬT CAMERA & LẤY YÊU CẦU
+      </button>
 
-      <div style="display:flex; gap:10px;">
+      <div style="display:flex; gap:10px; margin-top:8px;">
         <button id="btnIn" class="btn btn-in" onclick="submitCheckIn('IN')" disabled>🟢 VÀO CA</button>
         <button id="btnOut" class="btn btn-out" onclick="submitCheckIn('OUT')" disabled>🔴 RA CA</button>
       </div>
@@ -120,7 +211,7 @@
   <script>
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwkp2WoJSSxsTX-ylUCvFpwTLKCujUsCKjTFc2EK9X6uIIFogvKq9IkQ1og2TnIV4zfvA/exec";
 
-    // DANH SÁCH CÁC ĐỘNG TÁC TAY & BIỂU CẢM NGẪU NHIÊN
+    // DANH SÁCH ĐỘNG TÁC TAY & BIỂU CẢM NGẪU NHIÊN
     const POSE_LIST = [
       "✌️ Giơ 2 ngón tay (V-sign) + 😊 Cười tươi",
       "👍 Giơ ngón tay cái (Like) + 😉 Nháy mắt một bên",
@@ -139,9 +230,57 @@
     let userLat = null, userLng = null, userIP = '';
 
     window.onload = function() {
+      startDigitalClock();
       getGeoAndIP();
       loadMemberList();
     };
+
+    // ĐỒNG HỒ REALTIME & TÍNH TUẦN CHẴN / LẺ
+    function startDigitalClock() {
+      function update() {
+        const now = new Date();
+        const hrs = String(now.getHours()).padStart(2, '0');
+        const mins = String(now.getMinutes()).padStart(2, '0');
+        const secs = String(now.getSeconds()).padStart(2, '0');
+        document.getElementById('clockTime').innerText = `${hrs}:${mins}:${secs}`;
+
+        const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+        const dayName = days[now.getDay()];
+        const date = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const year = now.getFullYear();
+        document.getElementById('clockDate').innerText = `${dayName}, ${date}/${month}/${year}`;
+
+        // THUẬT TOÁN TÍNH TUẦN CHẴN/LẺ (Anchor: Tuần bắt đầu ngày 03/08/2026 là Tuần 32)
+        const anchorMonday = new Date(2026, 7, 3); // Monday, Aug 3, 2026
+        const currMonday = new Date(now);
+        const day = currMonday.getDay();
+        const diffToMonday = currMonday.getDate() - day + (day === 0 ? -6 : 1);
+        currMonday.setDate(diffToMonday);
+        currMonday.setHours(0,0,0,0);
+
+        const diffWeeks = Math.round((currMonday - anchorMonday) / (7 * 24 * 60 * 60 * 1000));
+        const weekNum = 32 + diffWeeks;
+        const weekType = (weekNum % 2 === 0) ? "Chẵn" : "Lẻ";
+        
+        document.getElementById('clockWeek').innerText = `Tuần ${weekNum} (${weekType})`;
+      }
+      setInterval(update, 1000);
+      update();
+    }
+
+    // THÔNG BÁO TOAST THAY CHO ALERT()
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
 
     function switchTab(tab) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -167,13 +306,13 @@
           pos => {
             userLat = pos.coords.latitude;
             userLng = pos.coords.longitude;
-            document.getElementById('infoGPS').innerText = `${userLat.toFixed(5)}, ${userLng.toFixed(5)}`;
+            document.getElementById('infoGPS').innerText = `${userLat.toFixed(4)}, ${userLng.toFixed(4)}`;
           },
-          err => { document.getElementById('infoGPS').innerText = '❌ Chưa cấp quyền GPS!'; },
+          err => { document.getElementById('infoGPS').innerText = 'Chưa bật GPS'; },
           { enableHighAccuracy: true, timeout: 10000 }
         );
       } else {
-        document.getElementById('infoGPS').innerText = 'Trình duyệt không hỗ trợ GPS';
+        document.getElementById('infoGPS').innerText = 'Không hỗ trợ GPS';
       }
     }
 
@@ -184,7 +323,7 @@
         fetch(GAS_WEB_APP_URL + "?api=getNames")
           .then(res => res.json())
           .then(populateNames)
-          .catch(err => { document.getElementById('status').innerText = '❌ Lỗi tải danh sách tên!'; });
+          .catch(() => { document.getElementById('status').innerText = '❌ Lỗi tải danh sách tên!'; });
       }
     }
 
@@ -214,19 +353,19 @@
         video.srcObject = cameraStream;
         await video.play();
         
-        // TẠO ĐỘNG TÁC NGẪU NHIÊN 1 LẦN DUY NHẤT KHI BẬT CAMERA
         generateRandomPose();
 
-        // KHÓA NÚT BẬT CAMERA, KHÔNG CHO BẤM ĐỔI ĐỘNG TÁC NỮA
         const btnCam = document.getElementById('btnStartCam');
-        btnCam.innerText = '✅ CAMERA ĐÃ BẬT';
+        btnCam.innerHTML = '✅ CAMERA ĐÃ BẬT';
         btnCam.disabled = true;
 
         document.getElementById('btnIn').disabled = false;
         document.getElementById('btnOut').disabled = false;
-        document.getElementById('status').innerText = '✅ Làm đúng động tác & biểu cảm trên hình rồi bấm Vào/Ra ca!';
+        document.getElementById('status').innerText = '✅ Căn mặt vào ô elip & làm đúng động tác rồi bấm Vào/Ra ca!';
+        showToast("Camera đã bật thành công!", "success");
       } catch (e) {
-        document.getElementById('status').innerText = '❌ Bạn đã chặn quyền sử dụng Camera trên trình duyệt!';
+        document.getElementById('status').innerText = '❌ Bạn đã chặn quyền sử dụng Camera!';
+        showToast("Vui lòng cho phép quyền truy cập Camera!", "error");
       }
     }
 
@@ -242,13 +381,13 @@
     async function submitRegister() {
       const name = document.getElementById('regUserName').value;
       const pin = document.getElementById('regUserPin').value;
-      if (!name || !pin) return alert('Vui lòng chọn Tên và nhập Mã PIN!');
+      if (!name || !pin) return showToast('Vui lòng chọn Tên và nhập Mã PIN!', 'error');
 
       document.getElementById('status').innerText = '⏳ Đang đăng ký thiết bị...';
       const payload = { action: 'registerDevice', name: name, pin: pin, deviceId: generateDeviceId() };
 
       sendDataToServer(payload, (res) => {
-        alert(res.message);
+        showToast(res.message, res.success ? 'success' : 'error');
         document.getElementById('status').innerText = res.message;
         if (res.success) switchTab('checkin');
       });
@@ -259,9 +398,9 @@
       const pin = document.getElementById('userPin').value;
       const office = document.getElementById('office').value;
 
-      if (!name) return alert('Vui lòng chọn Họ và Tên!');
-      if (!pin) return alert('Vui lòng nhập Mã PIN!');
-      if (!cameraStream) return alert('Vui lòng bật Camera!');
+      if (!name) return showToast('Vui lòng chọn Họ và Tên!', 'error');
+      if (!pin) return showToast('Vui lòng nhập Mã PIN!', 'error');
+      if (!cameraStream) return showToast('Vui lòng bật Camera!', 'error');
 
       const video = document.getElementById('webcam');
       const canvas = document.getElementById('canvas');
@@ -293,7 +432,7 @@
         document.getElementById('btnIn').disabled = false;
         document.getElementById('btnOut').disabled = false;
         document.getElementById('status').innerText = res.message;
-        alert(res.message);
+        showToast(res.message, res.success ? 'success' : 'error');
       });
     }
 
@@ -316,6 +455,7 @@
           document.getElementById('btnIn').disabled = false;
           document.getElementById('btnOut').disabled = false;
           document.getElementById('status').innerText = '❌ Lỗi kết nối Server: ' + err;
+          showToast('Lỗi kết nối Server!', 'error');
         });
       }
     }
