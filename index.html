@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Hệ Thống Điểm Danh - ĐH Bách Khoa TPHCM</title>
+  <!-- Thư viện Font Awesome cho Icon chuẩn UI -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     :root {
       --bk-navy: #003366;
@@ -17,58 +19,130 @@
       --border-color: #e2e8f0;
     }
     * { box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg-color); margin: 0; padding: 15px 10px; color: var(--text-main); }
-    .card { background: var(--card-bg); border-radius: 16px; padding: 20px; max-width: 450px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0, 51, 102, 0.08); border: 1px solid var(--border-color); }
-    .logo-header { display: flex; justify-content: space-around; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
-    .logo-item { width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+      background: var(--bg-color); 
+      margin: 0; 
+      padding: 20px 12px; 
+      color: var(--text-main); 
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card { 
+      background: var(--card-bg); 
+      border-radius: 16px; 
+      padding: 24px; 
+      width: 100%;
+      max-width: 480px; 
+      margin: 0 auto; 
+      box-shadow: 0 10px 30px rgba(0, 51, 102, 0.08); 
+      border: 1px solid var(--border-color); 
+    }
+    .logo-header { 
+      display: flex; 
+      justify-content: space-around; 
+      align-items: center; 
+      margin-bottom: 12px; 
+      padding-bottom: 12px; 
+      border-bottom: 1px solid var(--border-color); 
+    }
+    .logo-item { 
+      width: 45px; 
+      height: 45px; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+    }
     .logo-item img { width: 100%; height: 100%; object-fit: contain; }
     .header-title { text-align: center; margin-bottom: 15px; }
     .header-title h3 { color: var(--bk-navy); margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
     .header-title h2 { color: var(--bk-navy-dark); margin: 4px 0 0 0; font-size: 18px; font-weight: 800; }
-    .digital-clock { background: linear-gradient(135deg, var(--bk-navy-dark), var(--bk-navy)); color: white; border-radius: 12px; padding: 12px; text-align: center; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0, 51, 102, 0.2); }
+    
+    .digital-clock { 
+      background: linear-gradient(135deg, var(--bk-navy-dark), var(--bk-navy)); 
+      color: white; 
+      border-radius: 12px; 
+      padding: 12px; 
+      text-align: center; 
+      margin-bottom: 15px; 
+      box-shadow: 0 4px 12px rgba(0, 51, 102, 0.2); 
+    }
     .clock-time { font-family: 'Courier New', Courier, monospace; font-size: 26px; font-weight: bold; color: #38bdf8; letter-spacing: 2px; }
     .clock-date { font-size: 12px; margin-top: 4px; color: #cbd5e1; }
     .clock-week { display: inline-block; background: rgba(255, 255, 255, 0.15); padding: 2px 8px; border-radius: 20px; font-weight: 600; color: #fde047; margin-top: 4px; font-size: 11px; }
+    
     .tab-container { display: flex; gap: 6px; margin-bottom: 15px; background: #e2e8f0; padding: 4px; border-radius: 10px; }
-    .tab-btn { flex: 1; padding: 9px; border: none; background: transparent; font-weight: 700; font-size: 13px; cursor: pointer; border-radius: 8px; color: #64748b; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; font-weight: 700; font-size: 13px; cursor: pointer; border-radius: 8px; color: #64748b; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .tab-btn.active { background: white; color: var(--bk-navy); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+    
     .status-badges { display: flex; gap: 8px; margin-bottom: 15px; }
-    .badge { flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 6px; color: #334155; }
-    .pose-box { background: linear-gradient(135deg, #fffbe3, #fef3c7); border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-top: 15px; margin-bottom: 10px; text-align: center; position: relative; }
-    .pose-title { font-size: 11px; font-weight: 700; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 4px; }
-    .pose-highlight { color: #92400e; font-size: 15px; font-weight: 800; display: block; margin-top: 5px; line-height: 1.3; }
+    .badge { flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; color: #334155; }
+    
+    .pose-box { background: linear-gradient(135deg, #fffbe3, #fef3c7); border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-top: 15px; margin-bottom: 12px; text-align: center; }
+    .pose-title { font-size: 11px; font-weight: 700; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .pose-highlight { color: #92400e; font-size: 14px; font-weight: 800; display: block; margin-top: 6px; line-height: 1.4; }
+    
     .form-group { margin-bottom: 12px; text-align: left; }
-    label { display: flex; align-items: center; gap: 6px; font-weight: 600; margin-bottom: 5px; color: #334155; font-size: 12px; }
-    select, input { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 13px; background: #fff; color: #1e293b; outline: none; transition: border-color 0.2s; }
+    label { display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 6px; color: #334155; font-size: 12px; }
+    select, input { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; background: #fff; color: #1e293b; outline: none; transition: border-color 0.2s; }
     select:focus, input:focus { border-color: var(--bk-blue); box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15); }
-    .camera-box { position: relative; width: 100%; height: 250px; background: #0f172a; border-radius: 12px; overflow: hidden; margin-bottom: 15px; border: 2px solid #334155; }
+    
+    .camera-box { position: relative; width: 100%; aspect-ratio: 4 / 3; background: #0f172a; border-radius: 12px; overflow: hidden; margin-bottom: 15px; border: 2px solid #334155; }
     video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
     canvas { display: none; }
     .kyc-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; justify-content: center; align-items: center; }
-    .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 6px; color: white; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
-    .btn-cam { background: var(--bk-blue); }
+    
+    .btn-group { display: flex; gap: 10px; margin-top: 8px; }
+    .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+    .btn-cam { background: var(--bk-blue); margin-top: 6px; }
     .btn-cam:hover { background: #0052a3; }
     .btn-in { background: #16a34a; }
+    .btn-in:hover { background: #15803d; }
     .btn-out { background: #dc2626; }
-    .btn-reg { background: #2563eb; }
+    .btn-out:hover { background: #b91c1c; }
+    .btn-reg { background: #2563eb; margin-top: 8px; }
+    .btn-reg:hover { background: #1d4ed8; }
     .btn:disabled { background: #cbd5e1; cursor: not-allowed; color: #94a3b8; }
-    #status { margin-top: 15px; font-size: 12px; font-weight: 600; color: #475569; white-space: pre-line; text-align: center; }
+    
+    #status { margin-top: 15px; font-size: 12px; font-weight: 600; color: #475569; text-align: center; line-height: 1.5; }
     #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; width: 90%; max-width: 400px; }
     .toast { padding: 12px 16px; border-radius: 10px; background: white; color: #1e293b; box-shadow: 0 10px 25px rgba(0,0,0,0.15); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; animation: slideDown 0.3s forwards; border-left: 5px solid #2563eb; }
     .toast.success { border-left-color: #16a34a; }
     .toast.error { border-left-color: #dc2626; }
+    
     @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* RESPONSIVE LAYOUT BREAKPOINTS */
+    @media (min-width: 768px) {
+      .card { max-width: 600px; padding: 28px; }
+      .header-title h2 { font-size: 20px; }
+      .header-title h3 { font-size: 14px; }
+      .clock-time { font-size: 30px; }
+      .btn { font-size: 14px; padding: 13px; }
+    }
+
+    @media (max-width: 400px) {
+      body { padding: 8px 4px; }
+      .card { padding: 16px 12px; border-radius: 12px; }
+      .logo-item { width: 36px; height: 36px; }
+      .header-title h2 { font-size: 16px; }
+      .clock-time { font-size: 22px; }
+      .btn-group { flex-direction: column; gap: 6px; }
+    }
   </style>
 </head>
 <body>
   <div id="toast-container"></div>
   <div class="card">
     <div class="logo-header">
-      <div class="logo-item" title="Đoàn Thanh Niên"><img src="https://i.postimg.cc/RZBjLMdG/Logo-Doan-Thanh-NIen-Cong-San-Ho-Chi-Minh-1.webp"></div>
-      <div class="logo-item" title="ĐH Bách Khoa"><img src="https://i.postimg.cc/SRJ7FzGT/HCMUT-logo.png"></div>
-      <div class="logo-item" title="Hội Sinh Viên"><img src="https://i.postimg.cc/c4QzHpW1/Logo-Hoi-Sinh-Vien-Viet-Nam.webp"></div>
-      <div class="logo-item" title="Khoa"><img src="https://i.postimg.cc/4dV6PTBb/CSE-logo.png"></div>
+      <div class="logo-item" title="Đoàn Thanh Niên"><img src="https://i.postimg.cc/RZBjLMdG/Logo-Doan-Thanh-NIen-Cong-San-Ho-Chi-Minh-1.webp" alt="Logo Đoàn"></div>
+      <div class="logo-item" title="ĐH Bách Khoa"><img src="https://i.postimg.cc/SRJ7FzGT/HCMUT-logo.png" alt="Logo HCMUT"></div>
+      <div class="logo-item" title="Hội Sinh Viên"><img src="https://i.postimg.cc/c4QzHpW1/Logo-Hoi-Sinh-Vien-Viet-Nam.webp" alt="Logo Hội Sinh Viên"></div>
+      <div class="logo-item" title="Khoa CSE"><img src="https://i.postimg.cc/4dV6PTBb/CSE-logo.png" alt="Logo Khoa CSE"></div>
     </div>
+    
     <div class="header-title">
       <h3>BỘ PHẬN VĂN PHÒNG ĐOÀN HỘI KHOA KH-KTMT</h3>
       <h2>HỆ THỐNG ĐIỂM DANH TỰ ĐỘNG</h2>
@@ -83,11 +157,11 @@
     
     <div class="tab-container">
       <button class="tab-btn active" onclick="switchTab('checkin')">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        <i class="fa-solid fa-camera-retro"></i>
         Điểm Danh
       </button>
       <button class="tab-btn" onclick="switchTab('register')">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+        <i class="fa-solid fa-mobile-screen-button"></i>
         Đăng Ký Máy
       </button>
     </div>
@@ -95,7 +169,7 @@
     <!-- STATUS BADGE GPS -->
     <div class="status-badges">
       <div class="badge">
-        <svg width="14" height="14" fill="none" stroke="#2563eb" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        <i class="fa-solid fa-location-dot" style="color: #2563eb;"></i>
         <div><b>Định vị GPS:</b> <span id="infoGPS">Đang xác định...</span></div>
       </div>
     </div>
@@ -103,22 +177,24 @@
     <!-- TAB 1: ĐIỂM DANH -->
     <div id="tabCheckin">
       <div class="form-group">
-        <label>
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <label for="userName">
+          <i class="fa-solid fa-user"></i>
           Họ và Tên:
         </label>
         <select id="userName"><option value="">-- Đang tải danh sách... --</option></select>
       </div>
+      
       <div class="form-group">
-        <label>
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <label for="userPin">
+          <i class="fa-solid fa-key"></i>
           Mã PIN Cá Nhân:
         </label>
         <input type="password" id="userPin" placeholder="Nhập PIN cá nhân" maxlength="10">
       </div>
+      
       <div class="form-group">
-        <label>
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+        <label for="office">
+          <i class="fa-solid fa-building"></i>
           Văn Phòng:
         </label>
         <select id="office">
@@ -130,7 +206,7 @@
       <!-- THẺ YÊU CẦU ĐỘNG TÁC -->
       <div class="pose-box">
         <div class="pose-title">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          <i class="fa-solid fa-shield-halved"></i>
           Yêu cầu xác thực khuôn mặt
         </div>
         <span id="poseText" class="pose-highlight">Bấm "BẬT CAMERA" để nhận yêu cầu</span>
@@ -148,45 +224,57 @@
       </div>
 
       <button id="btnStartCam" class="btn btn-cam" onclick="startLiveCamera()">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        <i class="fa-solid fa-video"></i>
         BẬT CAMERA & LẤY YÊU CẦU
       </button>
-      <div style="display:flex; gap:10px; margin-top:8px;">
-        <button id="btnIn" class="btn btn-in" onclick="submitCheckIn('IN')" disabled>🟢 VÀO CA</button>
-        <button id="btnOut" class="btn btn-out" onclick="submitCheckIn('OUT')" disabled>🔴 RA CA</button>
+
+      <div class="btn-group">
+        <button id="btnIn" class="btn btn-in" onclick="submitCheckIn('IN')" disabled>
+          <i class="fa-solid fa-right-to-bracket"></i> VÀO CA
+        </button>
+        <button id="btnOut" class="btn btn-out" onclick="submitCheckIn('OUT')" disabled>
+          <i class="fa-solid fa-right-from-bracket"></i> RA CA
+        </button>
       </div>
     </div>
 
     <!-- TAB 2: ĐĂNG KÝ THIẾT BỊ -->
     <div id="tabRegister" style="display:none;">
       <div class="form-group">
-        <label>Họ và Tên:</label>
+        <label for="regUserName">Họ và Tên:</label>
         <select id="regUserName"><option value="">-- Chọn tên để đăng ký --</option></select>
       </div>
       <div class="form-group">
-        <label>Mã PIN Cá Nhân (Tạo mới từ 4 số):</label>
+        <label for="regUserPin">Mã PIN Cá Nhân (Tạo mới từ 4 số):</label>
         <input type="password" id="regUserPin" placeholder="Tạo mã PIN cá nhân">
       </div>
-      <button class="btn btn-reg" onclick="submitRegister()">📱 ĐĂNG KÝ MÁY NÀY</button>
+      <button class="btn btn-reg" onclick="submitRegister()">
+        <i class="fa-solid fa-mobile-screen-button"></i> ĐĂNG KÝ MÁY NÀY
+      </button>
     </div>
 
-    <div id="status">👉 Bấm <b>"BẬT CAMERA & LẤY YÊU CẦU"</b> để bắt đầu.</div>
+    <div id="status">
+      <i class="fa-solid fa-circle-info"></i> Bấm <b>"BẬT CAMERA & LẤY YÊU CẦU"</b> để bắt đầu.
+    </div>
   </div>
 
   <script>
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzPeBWlVKFlrQU7GPyhYQvKi4nrj0THbJSx3wU6JV40eHmTmTRap1b_gf6-Su7BODw6xw/exec";
+    
+    // Chuỗi yêu cầu động tác chuẩn hoá không sử dụng icon emoji
     const POSE_LIST = [
-      "✌️ Giơ 2 ngón tay (V-sign) + 😊 Cười tươi",
-      "👍 Giơ ngón tay cái (Like) + 😉 Nháy mắt một bên",
-      "🫶 Bắn tim 2 tay + 😍 Cười mỉm",
-      "🖐️ Xòe bàn tay sát má + 😮 Há miệng ngạc nhiên",
-      "👈 Chỉ 1 ngón tay vào má + 😊 Cười nhẹ",
-      "👌 Giơ tay ký hiệu OK + 😉 Nháy mắt",
-      "🤞 Đặt 2 ngón tay dưới cằm (V-line) + 😃 Cười tươi",
-      "✊ Nắm tay giơ ngang ngực + 😐 Mặt nghiêm túc",
-      "🤟 Ký hiệu I Love You + 😊 Cười tươi",
-      "👋 Giơ tay vẫy nhẹ + 😃 Cười mở miệng"
+      "Giơ 2 ngón tay (V-sign) + Cười tươi",
+      "Giơ ngón tay cái (Like) + Nháy mắt một bên",
+      "Tạo hình trái tim 2 tay + Cười mỉm",
+      "Xòe bàn tay sát má + Há miệng ngạc nhiên",
+      "Chỉ 1 ngón tay vào má + Cười nhẹ",
+      "Giơ tay ký hiệu OK + Nháy mắt",
+      "Đặt 2 ngón tay dưới cằm (V-line) + Cười tươi",
+      "Nắm tay giơ ngang ngực + Mặt nghiêm túc",
+      "Ký hiệu I Love You + Cười tươi",
+      "Giơ tay vẫy nhẹ + Cười mở miệng"
     ];
+    
     let currentPose = "Chưa lấy yêu cầu";
     let cameraStream = null;
     let userLat = null, userLng = null;
@@ -204,18 +292,21 @@
         const mins = String(now.getMinutes()).padStart(2, '0');
         const secs = String(now.getSeconds()).padStart(2, '0');
         document.getElementById('clockTime').innerText = `${hrs}:${mins}:${secs}`;
+        
         const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
         const dayName = days[now.getDay()];
         const date = String(now.getDate()).padStart(2, '0');
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const year = now.getFullYear();
         document.getElementById('clockDate').innerText = `${dayName}, ${date}/${month}/${year}`;
+        
         const anchorMonday = new Date(2026, 7, 3);
         const currMonday = new Date(now);
         const day = currMonday.getDay();
         const diffToMonday = currMonday.getDate() - day + (day === 0 ? -6 : 1);
         currMonday.setDate(diffToMonday);
         currMonday.setHours(0,0,0,0);
+        
         const diffWeeks = Math.round((currMonday - anchorMonday) / (7 * 24 * 60 * 60 * 1000));
         const weekNum = 32 + diffWeeks;
         const weekType = (weekNum % 2 === 0) ? "Chẵn" : "Lẻ";
@@ -229,8 +320,14 @@
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
-      toast.innerHTML = `<span>${message}</span>`;
+      
+      let iconClass = 'fa-solid fa-circle-info';
+      if (type === 'success') iconClass = 'fa-solid fa-circle-check';
+      if (type === 'error') iconClass = 'fa-solid fa-triangle-exclamation';
+
+      toast.innerHTML = `<i class="${iconClass}"></i><span>${message}</span>`;
       container.appendChild(toast);
+      
       setTimeout(() => {
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 300);
@@ -273,7 +370,9 @@
         fetch(GAS_WEB_APP_URL + "?api=getNames")
           .then(res => res.json())
           .then(populateNames)
-          .catch(() => { document.getElementById('status').innerText = '❌ Lỗi tải danh sách tên!'; });
+          .catch(() => { 
+            document.getElementById('status').innerHTML = '<i class="fa-solid fa-circle-xmark" style="color:#dc2626"></i> Lỗi tải danh sách tên!'; 
+          });
       }
     }
 
@@ -297,21 +396,23 @@
 
     async function startLiveCamera() {
       const video = document.getElementById('webcam');
-      document.getElementById('status').innerText = '⏳ Đang bật Camera...';
+      document.getElementById('status').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang bật Camera...';
       try {
         cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 640, height: 480 } });
         video.srcObject = cameraStream;
         await video.play();
         generateRandomPose();
+        
         const btnCam = document.getElementById('btnStartCam');
-        btnCam.innerHTML = '✅ CAMERA ĐÃ BẬT';
+        btnCam.innerHTML = '<i class="fa-solid fa-circle-check"></i> CAMERA ĐÃ BẬT';
         btnCam.disabled = true;
         document.getElementById('btnIn').disabled = false;
         document.getElementById('btnOut').disabled = false;
-        document.getElementById('status').innerText = '✅ Căn mặt vào ô elip & làm đúng động tác rồi bấm Vào/Ra ca!';
+        
+        document.getElementById('status').innerHTML = '<i class="fa-solid fa-circle-check" style="color:#16a34a"></i> Căn mặt vào ô elip & làm đúng động tác rồi bấm Vào/Ra ca!';
         showToast("Camera đã bật thành công!", "success");
       } catch (e) {
-        document.getElementById('status').innerText = '❌ Bạn đã chặn quyền sử dụng Camera!';
+        document.getElementById('status').innerHTML = '<i class="fa-solid fa-circle-xmark" style="color:#dc2626"></i> Bạn đã chặn quyền sử dụng Camera!';
         showToast("Vui lòng cho phép quyền truy cập Camera!", "error");
       }
     }
@@ -329,8 +430,10 @@
       const name = document.getElementById('regUserName').value;
       const pin = document.getElementById('regUserPin').value;
       if (!name || !pin) return showToast('Vui lòng chọn Tên và nhập Mã PIN!', 'error');
-      document.getElementById('status').innerText = '⏳ Đang đăng ký thiết bị...';
+      
+      document.getElementById('status').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đăng ký thiết bị...';
       const payload = { action: 'registerDevice', name: name, pin: pin, deviceId: generateDeviceId() };
+      
       sendDataToServer(payload, (res) => {
         showToast(res.message, res.success ? 'success' : 'error');
         document.getElementById('status').innerText = res.message;
@@ -342,9 +445,11 @@
       const name = document.getElementById('userName').value;
       const pin = document.getElementById('userPin').value;
       const office = document.getElementById('office').value;
+      
       if (!name) return showToast('Vui lòng chọn Họ và Tên!', 'error');
       if (!pin) return showToast('Vui lòng nhập Mã PIN!', 'error');
       if (!cameraStream) return showToast('Vui lòng bật Camera!', 'error');
+      
       const video = document.getElementById('webcam');
       const canvas = document.getElementById('canvas');
       canvas.width = 400; canvas.height = 300;
@@ -352,9 +457,11 @@
       ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       const imageBase64 = canvas.toDataURL('image/jpeg', 0.65);
+      
       document.getElementById('btnIn').disabled = true;
       document.getElementById('btnOut').disabled = true;
-      document.getElementById('status').innerText = '⏳ Đang xử lý điểm danh và lưu ảnh...';
+      document.getElementById('status').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý điểm danh và lưu ảnh...';
+      
       const payload = {
         name: name, 
         pin: pin, 
@@ -366,6 +473,7 @@
         imageBase64: imageBase64, 
         poseRequired: currentPose
       };
+      
       sendDataToServer(payload, (res) => {
         document.getElementById('btnIn').disabled = false;
         document.getElementById('btnOut').disabled = false;
@@ -392,7 +500,7 @@
         .catch(err => {
           document.getElementById('btnIn').disabled = false;
           document.getElementById('btnOut').disabled = false;
-          document.getElementById('status').innerText = '❌ Lỗi kết nối Server: ' + err;
+          document.getElementById('status').innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#dc2626"></i> Lỗi kết nối Server!';
           showToast('Lỗi kết nối Server!', 'error');
         });
       }
