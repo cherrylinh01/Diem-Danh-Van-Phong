@@ -1,6 +1,15 @@
 {
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/diem-danh",
+      "permanent": true
+    }
+  ],
   "rewrites": [
-    { "source": "/diem-danh", "destination": "/index.html" },
-    { "source": "/", "destination": "/index.html" }
+    {
+      "source": "/diem-danh",
+      "destination": "/index.html"
+    }
   ]
 }
